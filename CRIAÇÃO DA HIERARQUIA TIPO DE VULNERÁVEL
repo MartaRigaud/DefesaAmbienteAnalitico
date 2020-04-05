@@ -1,0 +1,94 @@
+CRIAÇÃO DA HIERARQUIA TIPO DE VULNERÁVEL (HVULNERABLETYPE)
+• Passo 1: O campo Related Attack Patterns das tabelas intermediárias tipo de vulnerável
+por ataque por conceito de pesquisa, desenvolvimento e arquitetural (TypeVulnerabeResarch,
+TypeVulnerableDevelopment e TypeVulnerableArchitectural) tem
+como conteúdo uma lista de CAPEC-ID dos tipo de ataque associados. Esta lista
+será transformada em registros cada um contendo CWE-ID do tipo de vulnerável e
+o CAPEC-ID do tipo de ataque. Essa transformação foi feita através do algoritmo
+registrosTipoVulneravelTipoAtaque transcrito abaixo;
+Algoritmo para separar em registros a lista de tipos de ataque dos tipos
+de vulnerável ( registrosTipoVulneravelTipoAtaque)
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+public class registrosTipoVulneravelTipoAtaque{
+public static void main(String[] args) {
+try {
+FileReader arq = new FileReader("«Arquivo da base de dados do CWE»");
+BufferedReader lerArq = new BufferedReader(arq);
+String linhaPadraoAtaque = lerArq.readLine();
+File fileSaida = new File("«typeVulnerableTypeAttack.cvs»");
+if(!fileSaida.exists()){
+fileSaida.createNewFile();
+System.out.println("Arquivo criado com sucesso");
+}else{
+System.out.println("Arquivo ja existe");
+}
+
+FileWriter fw = new FileWriter(fileSaida, true);
+PrintWriter pw = new PrintWriter(fw);
+BufferedWriter bw = new BufferedWriter(pw);
+int i =0;
+while(linhaPadraoAtaque != null) {
+// separa linha por colunas
+String[] ataqueSeparadoporCampo =
+linhaPadraoAtaque.split(",");
+String id = ataqueSeparadoporCampo[0].replace("¨","");
+try{
+String relatedAttackPatterns = ataqueSeparadoporCampo[1];
+String[] listaRelatedAttackPatterns =
+relatedAttackPatterns.split("::");
+for(int j=1; j <listaRelatedAttackPatterns.length; j++){
+try{
+Integer.parseInt(listaRelatedAttackPatterns[j]);
+bw.write(id+","+ listaRelatedAttackPatterns[j]);
+bw.newLine();
+} catch(Exception e){
+}
+} // fim do for para percorrer o conteúdo do campo
+}catch(Exception e) {
+System.err.printf("Campo nulo");
+}
+linhaPadraoAtaque = lerArq.readLine();
+i++;
+}// end do while
+bw.flush();
+bw.close();
+} catch (IOException e) {
+System.err.printf("Erro na abertura do arquivo");
+}
+} //end do main
+}//end da classe
+
+• Passo 2: Os registros do tipos de vulnerável associados aos tipos de ataque gerados
+pelo algoritmo do passo 1 são carregados na tabelas intermediárias VulnerableTypehasAttackType;
+• Passo 3: Realização de uma consulta unindo os dados das TypeVulnerabeResarch,
+TypeVulnerableDevelopment, TypeVulnerableArchitectural e VulnerableTypehasAttackType,
+conforme abaixo;
+Consulta as tabelas TypeVulnerableResarch, TypeVulnerableDevelopment
+e TypeVulnerableArchitectural:
+Select "CWE-ID", "Name", idtypeattacktype
+from HtypeAttackType join VulnerableTypehasAttackType on
+HtypeAttackType."CAPEC-ID" = VulnerableTypehasAttackType."CAPEC-ID"
+join
+(SELECT distinct "CWE-ID", trim("Name")
+FROM TypeVulnerableResarch
+union
+SELECT distinct "CWE-ID", trim("Name")
+FROM TypeVulnerableDevelopment
+union
+SELECT distinct "CWE-ID", trim("Name")
+FROM TypeVulnerableArchitectural;) as CWE on
+CWE."CWE-ID" = VulnerableTypehasAttackType."CWE-ID"
+• Passo 4: Criar hierarquia de tipo de tipo de vulnerable (HVulnerableType) e carregá-la
+com o conteúdo do resultado da consulta do passo 3, conforme abaixo.
+Criação da hierarquia tipo de vulnerável (HVulnerableType):
+CREATE TABLE HVunerableType
+( IdVulnerableType BIGSERIAL
+, "CWE-ID" BIGINT
+, "Name" TEXT,
+IdTypeAttackType BIGSERIA);
