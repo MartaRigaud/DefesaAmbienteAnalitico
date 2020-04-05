@@ -1,0 +1,21 @@
+CRIAÇÃO DA TABELA INTERMEDIÁRIA
+INCIDENTE (INCIDENT)
+CREATE TABLE Incident
+( "Severity" VARCHAR(226)
+, "Name" VARCHAR(78)
+, "Time" VARCHAR(29)
+, "Direction" VARCHAR(14)
+, "Result" VARCHAR(14)
+, "Attack Count" BIGINT
+, "BTP" VARCHAR(6)
+, "Attack Category" VARCHAR(14)
+, "Attacker IP Address" VARCHAR(15)
+, "Attacker Port" VARCHAR(15)
+, "Attacker Risk" VARCHAR(3)
+, "Target IP Address" VARCHAR(15)
+, "Target Port" VARCHAR(15)
+, "Target Risk" VARCHAR(3)
+, Application VARCHAR(16)
+, "Domain" VARCHAR(17)
+, Device VARCHAR(46)
+, Interface VARCHAR(29) );
