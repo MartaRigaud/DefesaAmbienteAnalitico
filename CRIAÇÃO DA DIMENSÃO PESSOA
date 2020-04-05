@@ -1,0 +1,20 @@
+CRIAÇÃO DA DIMENSÃO PESSOA
+(DIMPERSON)
+Consulta a tabela Incident:
+Select distinct Incident."Domain", Incident."device", Incident."interface"
+from Incident
+where Incident."Name" is not NULL and
+Incident."Attacker IP Address" is not NULL and
+Incident."Attacker Port" is not NULL and
+Incident."Target IP Address" is not NULL and
+Incident."Target Port" is not NULL and
+Incident."Domain" is not NULL and
+Incident."Device" is not NULL and
+Incident."Interface" is not NULL and
+Incident."Attack Count" is not NULL;
+Criação da dimensão pessoa (DimPerson):
+CREATE TABLE DimPerson
+( IdPerson BIGSERIAL
+, "Domain" VARCHAR(100)
+, "Device" VARCHAR(100)
+, "Interface" VARCHAR(100) );
