@@ -1,0 +1,26 @@
+CRIAÇÃO DAS TABELAS INTERMEDIÁRIAS TIPO DE VULNERABILIDADE POR CONCEITO DE PESQUISA, DE DESENVOLVIMENTO E ARQUITETURAIS (TYPEVULNERABILITYRESARCH,
+TYPEVULNERABILITYDEVELOPMENT,
+TYPEVULNERABILITYARCHITECTURAL)
+CREATE TABLE TypeVulnerableResarch
+( "CWE-ID" BIGINT , "Name" VARCHAR(103)
+, "Weakness Abstraction" VARCHAR(8)
+, Status VARCHAR(10)
+, Description VARCHAR(344)
+, "Extended Description" VARCHAR(4203)
+, "Related Weaknesses" VARCHAR(417)
+, "Weakness Ordinalities" VARCHAR(44)
+, "Applicable Platforms" VARCHAR(388)
+, "Background Details" VARCHAR(1057)
+, "Alternate Terms" VARCHAR(484)
+, "Modes Of Introduction" VARCHAR(696)
+, "Exploitation Factors" BOOLEAN
+, "Likelihood of Exploit" BOOLEAN
+, "Common Consequences" VARCHAR(1915)
+, "Detection Methods" VARCHAR(3653)
+, "Potential Mitigations" VARCHAR(10815)
+, "Observed Examples" VARCHAR(9774)
+, "Functional Areas" VARCHAR(22)
+, "Affected Resources" VARCHAR(21)
+, "Taxonomy Mappings" VARCHAR(975)
+, "Related Attack Patterns" VARCHAR(229)
+, Notes VARCHAR(2877) );
