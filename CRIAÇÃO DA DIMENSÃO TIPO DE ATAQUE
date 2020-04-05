@@ -1,0 +1,14 @@
+CRIAÇÃO DA DIMENSÃO TIPO DE ATAQUE (DIMATTACKTYPE)
+Criação da tabela intermediária AttackType:
+CREATE TABLE AttackType
+( NameAtaque VARCHAR(100)
+, NamePadrao VARCHAR(95));
+Consulta a tabela HTypeAttackType:
+select distinct trim(Nameataque), idtypeattacktype
+from attacktype join htypeattacktype
+on trim(namePadrao) = trim(htypeattacktype."Name")
+Criação do dimensão tipo de ataque (DimAttackType):
+CREATE TABLE DimAttackType
+( IdAttackType BIGSERIAL
+, Name VARCHAR(100)
+, idTypeAttackType BIGSERIAL);
