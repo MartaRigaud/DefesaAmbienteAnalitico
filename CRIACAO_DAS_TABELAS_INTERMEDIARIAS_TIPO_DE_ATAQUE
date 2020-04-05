@@ -1,0 +1,22 @@
+CRIAÇÃO DAS TABELAS INTERMEDIÁRIAS TIPO DE ATAQUE POR MECANISMO E POR DOMÍNIO (TYPETYPEATTACKMECHANISM, TYPEATTACKDOMAIN)
+CREATE TABLE AttackTypeMechanism
+( CAPEC-ID BIGINT
+, "Name" VARCHAR(79)
+, Abstraction VARCHAR(8)
+, Status VARCHAR(6)
+, Description VARCHAR(3762)
+, AlternateTerms VARCHAR(41)
+, LikelihoodOfAttack VARCHAR(6)
+, TypicalSeverity VARCHAR(9)
+, RelatedAttackPatterns VARCHAR(125)
+, ExecutionFlow VARCHAR(4355)
+, Prerequisites VARCHAR(709)
+, SkillsRequired VARCHAR(437)
+, ResourcesRequired VARCHAR(556)
+, Indicators VARCHAR(607)
+, Consequences VARCHAR(1556)
+, Mitigations VARCHAR(1732)
+, ExampleInstances VARCHAR(2616)
+, RelatedWeaknesses VARCHAR(59)
+, TaxonomyMappings VARCHAR(283)
+, Notes VARCHAR(2833) );
