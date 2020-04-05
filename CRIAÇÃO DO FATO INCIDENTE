@@ -1,0 +1,29 @@
+CRIAÇÃO DO FATO INCIDENTE (FACTINCIDENT)
+Consulta a tabela Incident, DimTemporal, DimInformationAsset, DimAttackType:
+SELECT TutoredVictim.idinformationasset as
+idInformationAssetTutoredVictim,
+TutoredAttacker.idinformationasset as idInformationAssetTutoredAttacker,
+idtemporal,
+idperson as idPersonVictim,
+idattackType,
+Incident."Attack Count" as attackcount
+FROM Incident, diminformationasset2 as TutoredVictim, diminformationasset2 as TutoredAttacker,
+dimtemporal, dimperson,dimAttacktype
+where
+TutoredVictim.ip = Incident."Target IP Address" and
+TutoredVictim.port = Incident."Target Port" and
+TutoredAttacker.ip = Incident."Attacker IP Address" and
+TutoredAttacker.port = Incident."Attacker Port" and
+dimtemporal.datetimeComplet = Incident."Time" and
+trim(dimperson."Domain") = trim(Incident."Domain") and
+trim(dimperson.device) = trim(Incident."device") and
+trim(dimperson.interface) = trim(Incident."interface") and
+dimattacktype.attackname = Incident."Name"
+Criação do fato incidente (FactIncident):
+CREATE TABLE FactIncident(
+idinformationassettutoredvictim BIGINT
+, idinformationassettutoredattacker BIGINT
+,idpersonvictim BIGINT
+, idAttackType BIGINT
+, idtemporal BIGINT
+, attackcount BIGINT);
