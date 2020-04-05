@@ -1,0 +1,22 @@
+CRIAÇÃO DA DIMENSÃO TEMPORAL (DIMTEMPORAL)
+Consulta a tabela Incident:
+SELECT distinct Incident."Time" as DateTimeComplet,
+substring(Incident."Time",1,3) as Weekday,
+substring(Incident."Time",5,3) as Month,
+substring(Incident."Time",9,2) as Day,
+substring(Incident."Time",12,2) as Hour,
+substring(Incident."Time",15,2) as Minute,
+substring(Incident."Time",18,2) as Second,
+substring(Incident."Time",25,30) as Year
+FROM Incident;
+Criação da dimensão temporal (DimTemporal):
+CREATE TABLE DimTemporal
+( IdTemporal BIGSERIAL
+, DateTimeComplet VARCHAR(100)
+, Weekday VARCHAR(3)
+, Month VARCHAR(3)
+, Day VARCHAR(3)
+, Hour VARCHAR(3)
+, Minute VARCHAR(3)
+, Second VARCHAR(3)
+, Year VARCHAR(4));
