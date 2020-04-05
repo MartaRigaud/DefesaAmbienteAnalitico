@@ -1,0 +1,109 @@
+CRIAÇÃO DA HIERARQUIA DE TIPO DE TIPO DE ATAQUE (HTYPEATTACKTYPE)
+• Passo 1: O campo Related Attack Patterns das tabelas intermediárias tipo de ataque
+por mecanismo e por domínio (TypeTypeAttackMechanism, TypeAttackDomain)
+tem como conteúdo uma lista de CAPEC-ID dos supertipos de um tipo de ataque.
+Esta lista será transformada em registros cada um contendo CAPEC-ID do tipo
+e o CAPEC-ID do supertipo. Essa transformação foi feita através do algoritmo
+registrosSuperTipoAtaque transcrito abaixo;
+Algoritmo para separar em registros a lista de supertipos de tipos de
+ataque (registrosSuperTipoAtaque)
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+public class registrosSuperTipoAtaque{
+public static void main(String[] args) {
+try {
+FileReader arq = new FileReader("«Arquivo com padrões de ataque do CAPEC»");
+BufferedReader lerArq = new BufferedReader(arq);
+String linhaPadraoAtaque = lerArq.readLine();
+File fileSaida = new File("«ListSuperTypeAttackType.csv»");
+if(!fileSaida.exists()){
+fileSaida.createNewFile();
+System.out.println("Arquivo criado com sucesso");
+}else{
+System.out.println("Arquivo ja existe");
+}
+FileWriter fw = new FileWriter(fileSaida, true);
+PrintWriter pw = new PrintWriter(fw);
+BufferedWriter bw = new BufferedWriter(pw);
+int i =0;
+while(linhaPadraoAtaque != null) {
+// separa linha por colunas
+String[] ataqueSeparadoporCampo = linhaPadraoAtaque.split(",");
+String id = ataqueSeparadoporCampo[0].replace("¨","");
+String relatedAttackPatterns = ataqueSeparadoporCampo[1];
+String[] listaRelatedAttackPatterns = relatedAttackPatterns.split("::");
+for(int j=0; j <listaRelatedAttackPatterns.length; j++){
+if((listaRelatedAttackPatterns[j].length()>24) &&
+(listaRelatedAttackPatterns[j].substring(0,24).equals("NATURE:ChildOf:CAPEC ID:"))){
+bw.write(id+","+listaRelatedAttackPatterns[j].substring(24));
+bw.newLine();
+}
+}
+linhaPadraoAtaque = lerArq.readLine();
+i++;
+}
+bw.flush();
+bw.close();
+} catch (IOException e) {
+System.err.printf("Erro na abertura do arquivo");
+}
+} //end do main
+}//end da classe
+• Passo 2: Os registros do supertipos de ataque por mecanismo e por domínio gerados
+pelo algoritmo do passo 1 são carregados na tabelas intermediárias SupertypeAttackTypebyMechanism
+e SupertypeAttackTypebyDomain;
+• Passo 3: Realização de uma consulta unindo os dados das TypeTypeAttackMechanism,
+TypeAttackDomain, SupertypeAttackTypebyMechanism e SupertypeAttackTypeby-
+Domain, conforme abaixo;
+Consulta as tabelas TypeTypeAttackMechanism, TypeAttackDomain, SupertypeAttackTypebyMechanism
+e SupertypeAttackTypebyDomain
+select AttackandTypesDomain.idtypeAttacktype, AttackandTypesDomain."CAPECAPÊNDICE
+G. Criação da hierarquia de tipo de tipo de ataque (HTypeAttackType) 159
+ID", AttackandTypesDomain."Name" ,
+SuperMechanism, MetapadraoMechanism, categoryMechanism
+, SuperDomain, MetapadraoDomain, categoryDomain
+from
+(
+select htypeattacktype.idtypeattacktype ,
+htypeattacktype."CAPEC-ID" , htypeattacktype."Name",
+type."CAPEC-IDSuper" as SuperMechanism, Super1."CAPEC-IDSuper" as MetapadraoMechanism
+, Super2."CAPEC-IDSuper" as CategoryMechanism
+from htypeattacktype left join supertypeattacktypebymechanism as type
+on htypeattacktype."CAPEC-ID" = type."CAPEC-ID"
+left join supertypeattacktypebymechanism as Super1 on type."CAPEC-IDSuper" =
+Super1."CAPEC-ID"
+left join supertypeattacktypebymechanism as Super2 on Super1."CAPEC-IDSuper"
+= Super2."CAPEC-ID"
+) AttackandTypesMechanism ,
+(
+select htypeattacktype.idtypeattacktype ,
+htypeattacktype."CAPEC-ID" , htypeattacktype."Name",
+type."CAPEC-IDSuper" as SuperDomain, Super1."CAPEC-IDSuper" as MetapadraoDomain
+, Super2."CAPEC-IDSuper" as CategoryDomain
+from htypeattacktype left join supertypeattacktypebydomain as type
+on htypeattacktype."CAPEC-ID" = type."CAPEC-ID"
+left join supertypeattacktypebydomain as Super1
+on type."CAPEC-IDSuper" = Super1."CAPEC-ID"
+left join supertypeattacktypebydomain as Super2
+on Super1."CAPEC-IDSuper" = Super2."CAPEC-ID"
+) AttackandTypesDomain
+where AttackandTypesMechanism.Idtypeattacktype = AttackandTypesDomain. Id
+
+• Passo 4: Criar hierarquia de tipo de tipo de ataque (HTypeAttackType) e carregá-la
+com o conteúdo do resultado da consulta do passo 3, conforme abaixo.
+Criação da tabela de hierarquia de tipo de tipo de ataque (HTypeAttackType):
+CREATE TABLE HTypeAttackType
+( IdTypeAttackType BIGSERIAL
+, "CAPEC-ID" BIGINT
+, "Name" VARCHAR(95)
+, "CategoryMechanism" BIGINT
+, "MetapatternMechanism" BIGINT
+, "SupertypeMechanism" BIGINT
+, "CategoryDomain" BIGINT
+, "MetapatternDomain" BIGINT
+, "SupertypeDomain" BIGINT);
