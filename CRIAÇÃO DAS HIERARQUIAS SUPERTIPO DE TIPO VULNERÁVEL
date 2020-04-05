@@ -1,0 +1,103 @@
+CRIAÇÃO DAS HIERARQUIAS SUPERTIPO DE TIPO VULNERÁVEL POR CONCEITO DE PESQUISA, DESENVOLVIMENTO E ARQUITETURAL
+(HSUPERTYPEVULNERABLETYPEBYRESARCH, HSUPERTYPEVULNERABLETYPEBYDEVELOPMENT E (HSUPERTYPEVULNERABLETYPEBYARCHITECTURAL)
+• Passo 1: O campo Related Weaknesses das tabelas intermediárias tipo de vulnerável
+por ataque por conceito de pesquisa, desenvolvimento e arquitetural (TypeVulnerabeResarch,
+TypeVulnerableDevelopment e TypeVulnerableArchitectural) tem
+como conteúdo uma lista de CWE-ID dos supertipos supertipos de um tipo vulnerável.
+Esta lista será transformada em registros cada um contendo CWE-ID do
+tipo e o CWE-ID do supertipo. Essa transformação foi feita através do algoritmo
+registrosTipoVulneravelTipoAtaque transcrito abaixo;
+Algoritmo para separar em registros a lista de supertipos de tipos de
+vulnerável (registrosSuperTipoVulneravel)
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+public class registrosSuperTipoVulneravel{
+public static void main(String[] args) {
+try {
+FileReader arq = new FileReader("«arquivo com tipos de vulnerabilidade do CWE»");
+BufferedReader lerArq = new BufferedReader(arq);
+String linhaPadraoCWE = lerArq.readLine();
+File fileSaida = new File("«superTypeVulnerable.csv»");
+APÊNDICE K. Criação das hierarquias supertipo de tipo de vulnerável por conceito de pesquisa,
+desenvolvimento e arquitetural (HSuperTypeVulnerableTypebyResarch,
+HSuperTypeVulnerableTypebyDevelopment if(!fileSaida.exists()){ e (HSuperTypeVulnerableTypebyArchitectural) 171
+fileSaida.createNewFile();
+System.out.println("Arquivo criado com sucesso");
+}else{
+System.out.println("Arquivo ja existe");
+}
+FileWriter fw = new FileWriter(fileSaida, true);
+PrintWriter pw = new PrintWriter(fw);
+BufferedWriter bw = new BufferedWriter(pw);
+int i =0;
+while(linhaPadraoCWE != null) {
+// separa linha por colunas
+String[] CWESeparadoporCampo = linhaPadraoCWE.split(",");
+String id = CWESeparadoporCampo[0].replace("¨","");
+try{ // caso o CWE não tenha pai esse campo estará em branco, logo deve ir pra
+próxima linha
+String relatedWeaknessesPatterns = CWESeparadoporCampo[1];
+String[] listaRelatedWeaknessesPatterns = relatedWeaknessesPatterns.split("::");
+for(int j=0; j <listaRelatedWeaknessesPatterns.length; j++){
+if((listaRelatedWeaknessesPatterns[j].length()>22) &&
+(listaRelatedWeaknessesPatterns[j].substring(0,22).equals("NATURE:ChildOf:CWE
+ID:"))){
+String[] RelatedWeaknessesPatterns =
+listaRelatedWeaknessesPatterns[j].substring(22).split(":");
+if(RelatedWeaknessesPatterns[1].equals("VIEW ID") && RelatedWeaknessesPatterns[
+2].equals("1000")){
+System.out.println("ID: "+id +"Pai: "+ RelatedWeaknessesPatterns[0]);
+bw.write(id+","+ RelatedWeaknessesPatterns[0]);
+bw.newLine();
+} // fim do if
+} // fim do if para achar id pai
+} // fim do if para percorrer o conteúdo do campo
+}catch(Exception e) {
+System.err.printf("Campo nulo");
+}
+linhaPadraoCWE = lerArq.readLine();
+i++;
+}// end do while
+bw.close();
+} catch (IOException e) {
+System.err.printf("Erro na abertura do arquivo");
+}
+} //end do main
+}//end da classe
+• Passo 2: Os registros do tipos de vulnerável associados aos seus supertipos gerados
+pelo algoritmo do passo 1 são carregados nas tabelas intermediárias SupertypeVulnerableTypebyResarch,
+SupertypeVulnerableTypebyDevelopment e SupertypeVulnerableTypebyArchitectural.
+Segue abaixo DML de criação SuperTypeVulnerableType-
+Resarch;
+Criação da tabela intermediária SuperTypeVulnerableTypeResarch:
+CREATE TABLE SuperTypeVulnerableTypeResarch
+( "CWE-ID" BIGINT
+, "CWE-IDSuper" BIGINT );
+• Passo 3: Realização de uma consulta unindo os dados das tabelas SupertypeVulnerableTypebyResarch,
+SupertypeVulnerableTypebyDevelopment, SupertypeVulnerableTypebyArchitectural
+e HVulnerableType. Segue abaixo consulta unindo as tabelas
+SuperTypeVulnerableTypeResarch e HVulnerableType;
+Consulta a tabela SuperTypeVulnerableTypeResarch:
+select typevulnerable.idvulnerabletype as "idVulnerableType",
+supertype.idvulnerabletype as "idVulnerableTypeSuper"
+from supertypevulnerabletyperesarch join
+hvulnerabletype as typevulnerable on
+typevulnerable."CWE-ID" = supertypevulnerabletyperesarch."CWE-ID"
+join hvulnerabletype as
+supertype on supertype."CWE-ID" = supertypevulnerabletyperesarch."CWE-IDSuper"
+• Passo 4: Criar as hierarquias de supertipo de tipo de vulnerable (HSupertypeVulnerableTypebyResarch,
+HSupertypeVulnerableTypebyDevelopment e HSupertypeVulnerableTypebyArchitectural)
+e carregá-la com o conteúdo do resultado da consulta do
+passo 3, conforme abaixo.
+Criação da hierarquia tipo de vulnerável (HSuperty peVulnerableTypebyAPÊNDICE
+K. Criação das hierarquias supertipo de tipo de vulnerável por conceito de pesquisa,
+desenvolvimento e arquitetural (HSuperTypeVulnerableTypebyResarch,
+HSuperTypeVulnerableTypebyDevelopment Resarch): e (HSuperTypeVulnerableTypebyArchitectural) 173
+CREATE TABLE HSupertypeVunerableTypebyResarch
+( IdVulnerableType BIGSERIAL
+, IdVulnerableTypeSuper BIGSERIAL);
