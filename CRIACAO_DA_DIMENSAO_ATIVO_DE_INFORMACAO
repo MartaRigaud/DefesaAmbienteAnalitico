@@ -1,0 +1,33 @@
+CRIAÇÃO DA DIMENSÃO ATIVO DE INFORMAÇÃO (DIMINFORMATIONASSET)
+Consulta a tabela Incident:
+select distinct Incident."Attacker IP Address", Incident."Attacker Port"
+from Incident
+where Incident."Name" is not NULL and
+Incident."Attacker IP Address" is not NULL and
+Incident."Attacker Port" is not NULL and
+Incident."Target IP Address" is not NULL and
+Incident."Target Port" is not NULL and
+Incident."Domain" is not NULL and
+Incident."device" is not NULL and
+Incident."interface" is not NULL and
+Incident."Attack Count" is not NULL and
+Incident."Time" is not NULL
+union
+select distinct Incident."Target IP Address", Incident."Target Port"
+from Incident
+where Incident."Name" is not NULL and
+Incident."Attacker IP Address" is not NULL and
+Incident."Attacker Port" is not NULL and
+Incident."Target IP Address" is not NULL and
+Incident."Target Port" is not NULL and
+Incident."Domain" is not NULL and
+Incident."device" is not NULL and
+Incident."interface" is not NULL and
+Incident."Attack Count" is not NULL and
+Incident."Time" is not NULL
+
+Criação da dimensão ativo de informação (DimInformationAsset):
+CREATE TABLE DimInformationAsset
+( IdInformationAsset BIGSERIAL
+, IP VARCHAR(15)
+, Port VARCHAR(15));
